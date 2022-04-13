@@ -1,24 +1,30 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+import { useToasts } from 'react-toast-notifications';
 import { SERVER } from '../../apis/API';
 import Footer from '../../components/layout/Footer';
 import Header from '../../components/layout/Header';
 import { getProductByIdThunk } from '../../redux/productSlice';
+import { Routes } from '../../routes';
 import '../../scss/cart.scss'
 
+
 export default () => {
-  const [products, setProducts] = useState([]);
+  const [carts, setCarts] = useState([]);
   const search = () => {
-    const cart = JSON.parse(localStorage.getItem("cart"));
-    if (cart) {
-      setProducts(cart);
+    const cartLocalStorage = JSON.parse(localStorage.getItem("cart"));
+    if (cartLocalStorage) {
+      setCarts(cartLocalStorage);
     } else {
-      setProducts([])
+      setCarts([])
     }
   }
+
   useEffect(() => {
     search()
-  },[])
+  }, []);
+
   return (
     <>
       <Header />
@@ -34,42 +40,19 @@ export default () => {
               </li>
             </ul>
           </div>
-          {products.length > 0 ? <>
+          {carts.length > 0 ? <>
             <>
               <div className="cart-content">
-                {products.map((item, index) => {
+                {carts.map((item, index) => {
                   return (
-                    <ProductItem productId={item?.cartId} productCart={item} key={index} />
+                    <ProductItem productCart={item} key={index} search={search} carts={carts} />
                   )
                 })}
               </div>
-              <div className="total-bill">
-                <div className="each-row">
-                  <span>Tạm tính:</span>
-                  <strong>694.444 đ</strong>
-                </div>{" "}
-                <div className="each-row">
-                  <span>Phụ phí:</span>
-                  <strong>-</strong>
-                </div>{" "}
-                <div className="each-row">
-                  <span>Giảm giá:</span>
-                  <strong>-</strong>
-                </div>{" "}
-                <div className="each-row">
-                  <span>Hóa đơn VAT:</span>
-                  <strong>64.444 đ</strong>
-                </div>{" "}
-                <div className="each-row">
-                  <span>Tổng cộng</span>
-                  <strong>763.888 đ</strong>
-                </div>
-                <div className="row each-row">
-                  <a href="http://127.0.0.1:5500/page/payment.html">Đặt hàng</a>
-                </div>
-              </div>
+              <FormPrice carts={carts} />
             </>
           </> : <div>
+            <br />
             Giỏ hàng trống
           </div>}
         </div>
@@ -79,46 +62,135 @@ export default () => {
   )
 }
 
-function ProductItem({ productId, productCart }) {
+function ProductItem({ productCart, search, carts }) {
   const [product, setProduct] = useState();
+  let { addToast } = useToasts();
   const dispatch = useDispatch();
-  const search = async () => {
-    let resp = await dispatch(getProductByIdThunk(productId));
+  const searchProduct = async () => {
+    let resp = await dispatch(getProductByIdThunk(productCart?.productId));
     if (resp) {
       setProduct(resp)
     }
   }
   useEffect(() => {
-    search()
-  }, [productId])
+    searchProduct()
+  }, [productCart.productId]);
+  const deleteProductCart = (productId) => {
+    let cartProducts = carts;
+    let index = cartProducts.findIndex(item => item.productId == productId);
+    cartProducts.splice(index, 1);
+    localStorage.setItem("cart", JSON.stringify(cartProducts));
+    addToast("Xóa sản phẩm thành công", { appearance: 'success', autoDismiss: '1000' })
+    search();
+    // let cartProducts = cart;
+    // let index = cartProducts.findIndex(item => item.cartId == product._id);
+    // cartProducts.splice(index, 1);
+    // localStorage.setItem("cart", JSON.stringify(cartProducts));
+    // handleDeleteProduct(product._id);
+  }
+  let add = (productId) => {
+    let amount = productCart.amount + 1;
+    let cartProducts = carts;
+    let index = cartProducts.findIndex(item => item.productId == productId);
+    cartProducts[index] = {
+      productId: productId,
+      price: product?.price,
+      amount
+    }
+    localStorage.setItem("cart", JSON.stringify(cartProducts));
+    search();
+  }
+
+  let minus = (productId) => {
+    let amount = productCart.amount - 1;
+    if (amount == 0) {
+      deleteProductCart(productId)
+    } else {
+      let cartProducts = carts;
+      let index = cartProducts.findIndex(item => item.productId == productId);
+      cartProducts[index] = {
+        productId: productId,
+        price: product?.price,
+        amount
+      }
+      localStorage.setItem("cart", JSON.stringify(cartProducts));
+      search();
+    }
+
+  }
+
   return (
     <>
       <div className="cart-item">
-        <div className="cart-item__img">
-          <img
+        <div className="cart-item__img" style={{ display: 'flex', alignItems: 'center' }} >
+          {product?.photoURL && <img
             src={`${SERVER.URL_IMAGE}${product?.photoURL}`}
             alt="img"
-          />
+          />}
         </div>
         <div className="text">
-          <a href="/#">{product?.title}</a>
+          <p>{product?.title}</p>
           <p>
-            <span>{productCart?.price} đ</span>
+            <span>{Number((productCart?.amount) * (product?.price))} đ</span>
           </p>
           <div className="amount">
-            <div className="minus" ></div>
-            <input
-              type="number"
-              defaultValue={productCart?.amount}
-              onchange="Handlekeypress(this, evevt, 10708, 694444)"
-              onkeypress="Handlekeypress(this, evevt, 10708, 694444)"
-            />
-             <div className="plus" ></div>
+            <div className="minus"
+              onClick={() => {
+                minus(product?._id)
+              }}
+            ></div>
+            <div style={{
+              width: 32, height: 32, display: 'flex', justifyContent: 'center',
+              alignItems: 'center', border: '1px solid #ececec'
+            }} >{productCart?.amount}</div>
+            <div className="plus"
+              onClick={() => {
+                add(product?._id)
+              }}
+            ></div>
           </div>
         </div>
-        <a className="close remove-item" href="/#">
+        <div className="close remove-item" onClick={() => deleteProductCart(product?._id)}>
           X
-        </a>
+        </div>
+      </div>
+    </>
+  )
+}
+
+function FormPrice({ carts }) {
+  const [price, setPrice] = useState(0);
+  const searchPrice = async () => {
+    let total = 0;
+    carts.forEach(item => {
+      total += Number((item.price) * (item.amount))
+    })
+    setPrice(total)
+  }
+  useEffect(() => {
+    searchPrice()
+  }, [carts]);
+  const history = useHistory();
+  return (
+    <>
+      <div className="total-bill">
+        <div className="each-row">
+          <span>Tổng cộng</span>
+          <strong>{price} đ</strong>
+        </div>
+        <div className="row each-row"  >
+          <div
+            onClick={() => {
+              history.push(Routes.Payment.path)
+            }}
+            style={{ padding: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          ><div style={{
+            width: 100, height: 40, background: '#351032', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            color: '#fff', marginTop: 30, marginLeft: 20, borderRadius: 20
+          }} >
+              Đặt hàng
+            </div></div>
+        </div>
       </div>
     </>
   )

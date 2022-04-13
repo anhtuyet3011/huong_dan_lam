@@ -42,7 +42,7 @@ export default () => {
   return (
     <>
     <Header />
-      <Row>
+      <Row className='p-6' >
         <Col xs={12} xl={8}>
           <Card border="light" className="bg-white shadow-sm mb-4">
             <Card.Body>

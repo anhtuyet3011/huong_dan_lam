@@ -14,14 +14,17 @@ export default () => {
   }
   useEffect(() => {
     search()
-  }, [])
+  }, []);
+  const history = useHistory();
   return (
     <>
       <section className="menu">
         <div className="container">
           <ul className="ul-navbar">
             <li className="navbar-item">
-              <div className="padding">Trang chủ</div>
+              <div className="padding"
+              style={{cursor:'pointer'}} onClick={() => history.push(Routes.DashboardOverview.path)}
+              >Trang chủ</div>
             </li>
             {category && category?.map((item, index) => {
               return (

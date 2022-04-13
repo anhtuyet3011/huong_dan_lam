@@ -29,7 +29,7 @@ export default () => {
       <div className="container gift-add">
         <h2 className="gift-title">{tag?.title}</h2>
       </div>
-      <section className="gift-choose">
+      <section className="gift-choose pb-4 ">
         <div className="container box-gift pb-4">
           <div className="row">
             {products && products?.map((item, index) => {

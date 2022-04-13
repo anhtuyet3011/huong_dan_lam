@@ -16,14 +16,14 @@ export default () => {
   const addToCart = () => {
     const cart = JSON.parse(localStorage.getItem('cart'));
     if (cart) {
-      let isProductCart = cart.filter(item => item.cartId == product._id);
+      let isProductCart = cart.filter(item => item.productId == product._id);
       if (isProductCart.length > 0) {
         addToast("Sản phẩm đã có trong giỏ hàng", { appearance: 'warning', autoDismiss: '1000' })
       } else {
         cart.push({
-          cartId: product._id,
+          productId: product._id,
+          price: product?.price,
           amount: 1,
-          price: product?.price
         });
         localStorage.setItem("cart", JSON.stringify(cart))
         addToast("Thêm vào giỏ hàng thành công", { appearance: 'success', autoDismiss: '1000' })
@@ -33,9 +33,9 @@ export default () => {
     } else {
       let cartNew = [];
       cartNew.push({
-        cartId: product._id,
+        productId: product._id,
+        price: product?.price,
         amount: 1,
-        price: product?.price
       });
       localStorage.setItem("cart", JSON.stringify(cartNew))
       addToast("Thêm vào giỏ hàng thành công", { appearance: 'success', autoDismiss: '1000' })
@@ -47,7 +47,7 @@ export default () => {
     <>
       <>
         <Header />
-        <section className="detail">
+        <section className="detail pt-4 pb-4 ">
           <div className="container ">
             <ul className="crumbs">
               <li>
