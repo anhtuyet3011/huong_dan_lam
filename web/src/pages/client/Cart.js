@@ -82,11 +82,6 @@ function ProductItem({ productCart, search, carts }) {
     localStorage.setItem("cart", JSON.stringify(cartProducts));
     addToast("Xóa sản phẩm thành công", { appearance: 'success', autoDismiss: '1000' })
     search();
-    // let cartProducts = cart;
-    // let index = cartProducts.findIndex(item => item.cartId == product._id);
-    // cartProducts.splice(index, 1);
-    // localStorage.setItem("cart", JSON.stringify(cartProducts));
-    // handleDeleteProduct(product._id);
   }
   let add = (productId) => {
     let amount = productCart.amount + 1;
@@ -186,7 +181,7 @@ function FormPrice({ carts }) {
             style={{ padding: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
           ><div style={{
             width: 100, height: 40, background: '#351032', display: 'flex', alignItems: 'center', justifyContent: 'center',
-            color: '#fff', marginTop: 30, marginLeft: 20, borderRadius: 20
+            color: '#fff', marginTop: 30, marginLeft: 20, borderRadius: 20, cursor: 'pointer'
           }} >
               Đặt hàng
             </div></div>
