@@ -11,12 +11,12 @@ export class AppService {
     const transport = nodemailer.createTransport({
       service: "Gmail",
       auth: {
-        user: 'zenominhhoang@gmail.com',
-        pass: 'Dalecarnegie521985',
+        user: 'anhtuyettuyet3011@gmail.com',
+        pass: 'Anhtuyettuyet-3011',
       },
     });
     transport.sendMail({
-      from: 'zenominhhoang@gmail.com',
+      from: 'anhtuyettuyet3011@gmail.com',
       to: 'minhhoangzeno@gmail.com',
       subject: "Please confirm your account",
       html: `<h1>Email Confirmation</h1>

@@ -26,12 +26,12 @@ export class FeedbackService {
         const transport = nodemailer.createTransport({
             service: "Gmail",
             auth: {
-                user: 'zenominhhoang@gmail.com',
-                pass: 'Dalecarnegie521985',
+                user: 'anhtuyettuyet3011@gmail.com',
+                pass: 'Anhtuyettuyet-3011',
             }
         })
         transport.sendMail({
-            from: 'zenominhhoang@gmail.com',
+            from: 'anhtuyettuyet3011@gmail.com',
             to: email,
             subject: "Phản hồi",
             html: `<h1>Phản hồi của bạn đã được ghi nhận</h1>
